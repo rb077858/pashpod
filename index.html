@@ -1,236 +1,502 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PashPod - האזנה ופרקים</title>
-    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <style>
-        :root {
-            --spotify-color: #1DB954;
-            --pocketcasts-color: #f43e37;
-            --podcastaddict-color: #f48424;
-            --glass-bg: rgba(255, 255, 255, 0.9);
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>PashPod</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+<style>
+
+    :root{
+        --glass-bg: rgba(255,255,255,0.88);
+
+        --spotify:#1DB954;
+        --pocketcasts:#f43e37;
+        --podcastaddict:#f48424;
+
+        --text-dark:#1f2937;
+        --text-light:#6b7280;
+
+        --accent:#3498db;
+    }
+
+    *{
+        box-sizing:border-box;
+    }
+
+    body{
+        margin:0;
+        min-height:100vh;
+
+        font-family:'Assistant',sans-serif;
+
+        background-size:cover;
+        background-position:center;
+        background-repeat:no-repeat;
+        background-attachment:fixed;
+
+        display:flex;
+        justify-content:center;
+        align-items:flex-start;
+
+        padding:30px 15px;
+
+        overflow-x:hidden;
+        position:relative;
+    }
+
+    body::before{
+        content:'';
+
+        position:fixed;
+        inset:0;
+
+        background:rgba(0,0,0,0.45);
+        backdrop-filter:blur(8px);
+
+        z-index:-1;
+    }
+
+    .container{
+        width:100%;
+        max-width:720px;
+
+        background:var(--glass-bg);
+
+        border-radius:30px;
+
+        padding:30px;
+
+        box-shadow:
+            0 10px 40px rgba(0,0,0,0.35);
+
+        animation:fadeIn .5s ease;
+    }
+
+    @keyframes fadeIn{
+        from{
+            opacity:0;
+            transform:translateY(15px);
+        }
+        to{
+            opacity:1;
+            transform:translateY(0);
+        }
+    }
+
+    .podcast-header{
+        display:flex;
+        gap:20px;
+        align-items:center;
+        flex-wrap:wrap;
+
+        margin-bottom:25px;
+    }
+
+    .podcast-image{
+        width:130px;
+        height:130px;
+
+        object-fit:cover;
+
+        border-radius:22px;
+
+        box-shadow:
+            0 8px 25px rgba(0,0,0,0.25);
+    }
+
+    .podcast-info{
+        flex:1;
+        min-width:220px;
+    }
+
+    .podcast-title{
+        margin:0;
+
+        color:var(--text-dark);
+
+        font-size:2.2rem;
+    }
+
+    .podcast-description{
+        margin-top:10px;
+
+        color:var(--text-light);
+
+        line-height:1.7;
+    }
+
+    .platforms{
+        display:grid;
+        gap:12px;
+
+        margin-top:22px;
+    }
+
+    .platform-btn{
+        display:flex;
+        align-items:center;
+        gap:12px;
+
+        text-decoration:none;
+
+        color:white;
+
+        padding:14px 20px;
+
+        border-radius:18px;
+
+        font-size:1rem;
+        font-weight:700;
+
+        transition:.2s;
+
+        box-shadow:
+            0 5px 18px rgba(0,0,0,0.18);
+    }
+
+    .platform-btn:hover{
+        transform:scale(1.02);
+    }
+
+    .platform-btn i{
+        font-size:1.3rem;
+    }
+
+    .spotify{
+        background:var(--spotify);
+    }
+
+    .pocketcasts{
+        background:var(--pocketcasts);
+    }
+
+    .podcastaddict{
+        background:var(--podcastaddict);
+    }
+
+    .episodes-title{
+        margin-top:35px;
+        margin-bottom:15px;
+
+        font-size:1.4rem;
+        font-weight:700;
+
+        color:var(--text-dark);
+    }
+
+    .episodes{
+        display:flex;
+        flex-direction:column;
+        gap:14px;
+    }
+
+    .episode{
+        background:white;
+
+        border-radius:20px;
+
+        padding:18px;
+
+        box-shadow:
+            0 4px 16px rgba(0,0,0,0.08);
+
+        transition:.2s;
+    }
+
+    .episode:hover{
+        transform:translateY(-2px);
+    }
+
+    .episode-top{
+        display:flex;
+        justify-content:space-between;
+        align-items:flex-start;
+
+        gap:15px;
+    }
+
+    .episode-title{
+        font-size:1.1rem;
+        font-weight:700;
+
+        color:var(--text-dark);
+    }
+
+    .episode-date{
+        white-space:nowrap;
+
+        color:var(--text-light);
+
+        font-size:.9rem;
+    }
+
+    .episode-description{
+        margin-top:12px;
+
+        color:#4b5563;
+
+        line-height:1.7;
+    }
+
+    audio{
+        width:100%;
+        margin-top:15px;
+    }
+
+    .episode-links{
+        display:flex;
+        flex-wrap:wrap;
+        gap:10px;
+
+        margin-top:15px;
+    }
+
+    .episode-links a{
+        text-decoration:none;
+
+        background:#eef6ff;
+
+        color:#2563eb;
+
+        padding:8px 14px;
+
+        border-radius:12px;
+
+        font-size:.95rem;
+        font-weight:700;
+    }
+
+    .loading{
+        color:white;
+
+        margin-top:80px;
+
+        text-align:center;
+
+        font-size:1.2rem;
+    }
+
+    @media(max-width:700px){
+
+        .container{
+            padding:22px;
         }
 
-        body {
-            font-family: 'Assistant', sans-serif;
-            background: url('image.jpg') no-repeat center center fixed;
-            background-size: cover;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
-            padding: 40px 20px;
+        .podcast-header{
+            flex-direction:column;
+            text-align:center;
         }
 
-        .container {
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            padding: 30px;
-            border-radius: 25px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
-            max-width: 600px;
-            width: 100%;
-            text-align: center;
+        .podcast-image{
+            width:150px;
+            height:150px;
         }
+    }
 
-        h1 { font-size: 2.8rem; margin-bottom: 5px; color: #1e272e; }
-        .subtitle { margin-bottom: 25px; color: #485460; font-weight: bold; font-size: 1.1rem; }
-
-        .apps-grid {
-            display: grid;
-            gap: 12px;
-            margin-bottom: 35px;
-        }
-
-        .app-link {
-            display: flex;
-            align-items: center;
-            padding: 14px 25px;
-            border-radius: 50px;
-            text-decoration: none;
-            color: white;
-            font-weight: bold;
-            font-size: 1.1rem;
-            transition: transform 0.2s;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
-
-        .app-link:hover { transform: scale(1.03); }
-        .app-link i { margin-left: 15px; font-size: 1.4rem; width: 30px; text-align: center; }
-
-        .spotify { background-color: var(--spotify-color); }
-        .pocketcasts { background-color: var(--pocketcasts-color); }
-        .podcastaddict { background-color: var(--podcastaddict-color); }
-
-        .online-player {
-            border-top: 2px solid #ddd;
-            padding-top: 25px;
-            text-align: right;
-        }
-
-        .player-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 18px;
-        }
-
-        .player-title {
-            font-size: 1.3rem;
-            color: #2d3436;
-            font-weight: 700;
-        }
-
-        /* כפתור רענון */
-        #refresh-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 1.2rem;
-            color: #3498db;
-            transition: transform 0.5s ease;
-        }
-
-        #refresh-btn:hover { color: #2980b9; }
-        .spinning { animation: spin 1s linear; }
-
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(-360deg); }
-        }
-
-        #episode-list {
-            max-height: 320px;
-            overflow-y: auto;
-            margin-bottom: 20px;
-            border: 1px solid #eee;
-            border-radius: 12px;
-            background: white;
-            text-align: right;
-        }
-
-        .episode-item {
-            padding: 12px 18px;
-            border-bottom: 1px solid #eee;
-            cursor: pointer;
-            transition: background 0.2s;
-            font-size: 1rem;
-            color: #2d3436;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .episode-item:hover { background-color: #f1f2f6; }
-        .episode-item.active { background-color: #e8f4fd; border-right: 5px solid #3498db; font-weight: 700; }
-
-        .episode-num { color: #95a5a6; font-size: 0.8rem; margin-left: 10px; }
-
-        audio { width: 100%; margin-top: 15px; border-radius: 8px; }
-
-        #episode-list::-webkit-scrollbar { width: 8px; }
-        #episode-list::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
-    </style>
+</style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>PashPod</h1>
-        <p class="subtitle">פרשת השבוע בגובה העיניים</p>
+<div class="loading" id="loading">
+    טוען פודקאסט...
+</div>
 
-        <div class="apps-grid">
-            <a href="https://open.spotify.com/show/4emmIesm6wIUK9gl6NgEY0?si=ZFpx7q80QKWL244rPdwN7A" class="app-link spotify" target="_blank">
-                <i class="fab fa-spotify"></i> <span>Spotify</span>
-            </a>
-            <a href="https://pca.st/podcast/f42817a0-021f-013f-2afb-0e956d54cc61" class="app-link pocketcasts" target="_blank">
-                <i class="fa-solid fa-radio"></i> <span>Pocket Casts</span>
-            </a>
-            <a href="https://podcastaddict.com/podcast/pashpod/6851701" class="app-link podcastaddict" target="_blank">
-                <i class="fa-solid fa-rss"></i> <span>Podcast Addict</span>
-            </a>
+<div class="container" id="container" style="display:none;">
+
+    <div class="podcast-header">
+
+        <img class="podcast-image" id="podcast-image">
+
+        <div class="podcast-info">
+
+            <h1 class="podcast-title" id="podcast-title"></h1>
+
+            <div class="podcast-description" id="podcast-description"></div>
+
         </div>
 
-        <div class="online-player">
-            <div class="player-header">
-                <div class="player-title"><i class="fa-solid fa-headphones"></i> שמיעה אונליין</div>
-                <button id="refresh-btn" title="רענון רשימה"><i class="fa-solid fa-rotate"></i></button>
-            </div>
-            <div id="episode-list">טוען פרקים...</div>
-            <audio id="audio-player" controls></audio>
-        </div>
     </div>
 
-    <script>
-        const rssUrl = "https://anchor.fm/s/10e3b44f8/podcast/rss";
-        const proxyUrl = "https://api.rss2json.com/v1/api.json?rss_url=" + encodeURIComponent(rssUrl);
+    <div class="platforms">
 
-        async function loadEpisodes(isManualRefresh = false) {
-            const listContainer = document.getElementById('episode-list');
-            const refreshBtn = document.getElementById('refresh-btn');
-            
-            // אפקט ויזואלי לרענון
-            refreshBtn.classList.add('spinning');
-            setTimeout(() => refreshBtn.classList.remove('spinning'), 1000);
+        <a href="https://open.spotify.com/show/4emmIesm6wIUK9gl6NgEY0?si=ZFpx7q80QKWL244rPdwN7A"
+           class="platform-btn spotify"
+           target="_blank">
 
-            try {
-                const response = await fetch(proxyUrl + "&t=" + new Date().getTime()); // מניעת Cache
-                const data = await response.json();
-                
-                if (data.status === 'ok') {
-                    listContainer.innerHTML = '';
-                    
-                    // הפיכת המערך למספור היסטורי (ישן -> חדש)
-                    const episodes = data.items.reverse();
-                    const totalEpisodes = episodes.length;
+            <i class="fab fa-spotify"></i>
+            Spotify
 
-                    const urlParams = new URLSearchParams(window.location.search);
-                    let targetEpisodeNum = urlParams.get('episode');
+        </a>
 
-                    // לוגיקה לפרק 0 (הכי חדש)
-                    if (targetEpisodeNum === "0") {
-                        targetEpisodeNum = totalEpisodes; 
-                    } else {
-                        targetEpisodeNum = parseInt(targetEpisodeNum);
-                    }
+        <a href="https://pca.st/podcast/f42817a0-021f-013f-2afb-0e956d54cc61"
+           class="platform-btn pocketcasts"
+           target="_blank">
 
-                    episodes.forEach((item, index) => {
-                        const episodeDisplayNum = index + 1;
-                        const div = document.createElement('div');
-                        div.className = 'episode-item';
-                        div.innerHTML = `<span>${item.title}</span><span class="episode-num">#${episodeDisplayNum}</span>`;
-                        
-                        const playFunc = () => {
-                            document.querySelectorAll('.episode-item').forEach(el => el.classList.remove('active'));
-                            div.classList.add('active');
-                            const audioPlayer = document.getElementById('audio-player');
-                            audioPlayer.src = item.enclosure.link;
-                            audioPlayer.play();
-                        };
+            <i class="fa-solid fa-radio"></i>
+            Pocket Casts
 
-                        div.onclick = playFunc;
-                        listContainer.appendChild(div);
+        </a>
 
-                        // הפעלה אוטומטית רק בטעינה ראשונית (לא ברענון ידני כדי לא להפריע למאזין)
-                        if (episodeDisplayNum === targetEpisodeNum && !isManualRefresh) {
-                            playFunc();
-                            setTimeout(() => div.scrollIntoView({ behavior: 'smooth', block: 'center' }), 500);
-                        }
-                    });
-                }
-            } catch (e) {
-                listContainer.innerText = 'שגיאה בטעינה.';
-            }
+        <a href="https://podcastaddict.com/podcast/pashpod/6851701"
+           class="platform-btn podcastaddict"
+           target="_blank">
+
+            <i class="fa-solid fa-rss"></i>
+            Podcast Addict
+
+        </a>
+
+    </div>
+
+    <div class="episodes-title">
+        <i class="fa-solid fa-headphones"></i>
+        פרקים
+    </div>
+
+    <div class="episodes" id="episodes"></div>
+
+</div>
+
+<script>
+
+const rssUrl =
+    "https://anchor.fm/s/10e3b44f8/podcast/rss";
+
+const apiUrl =
+    "https://api.rss2json.com/v1/api.json?rss_url=" +
+    encodeURIComponent(rssUrl);
+
+async function loadPodcast(){
+
+    try{
+
+        const response =
+            await fetch(apiUrl);
+
+        const data =
+            await response.json();
+
+        if(data.status !== "ok"){
+            throw new Error("RSS Error");
         }
 
-        // כפתור רענון ידני
-        document.getElementById('refresh-btn').onclick = () => loadEpisodes(true);
+        const feed =
+            data.feed;
 
-        // טעינה ראשונית
-        loadEpisodes();
-    </script>
+        const image =
+            feed.image ||
+            feed.thumbnail ||
+            "";
+
+        if(image){
+
+            document.body.style.backgroundImage =
+                `url('${image}')`;
+
+            document.getElementById("podcast-image").src =
+                image;
+        }
+
+        document.getElementById("podcast-title").textContent =
+            feed.title || "PashPod";
+
+        document.getElementById("podcast-description").innerHTML =
+            feed.description || "";
+
+        const episodesContainer =
+            document.getElementById("episodes");
+
+        data.items.forEach((episode)=>{
+
+            const div =
+                document.createElement("div");
+
+            div.className =
+                "episode";
+
+            const date =
+                new Date(episode.pubDate)
+                .toLocaleDateString("he-IL");
+
+            div.innerHTML = `
+
+                <div class="episode-top">
+
+                    <div class="episode-title">
+                        ${episode.title || "ללא כותרת"}
+                    </div>
+
+                    <div class="episode-date">
+                        ${date}
+                    </div>
+
+                </div>
+
+                <div class="episode-description">
+                    ${episode.description || ""}
+                </div>
+
+                ${
+                    episode.enclosure?.link
+                    ?
+                    `
+                    <audio controls preload="none">
+                        <source src="${episode.enclosure.link}">
+                    </audio>
+                    `
+                    :
+                    ""
+                }
+
+                <div class="episode-links">
+
+                    ${
+                        episode.link
+                        ?
+                        `
+                        <a href="${episode.link}" target="_blank">
+
+                            <i class="fa-solid fa-link"></i>
+
+                            קישור לפרק
+
+                        </a>
+                        `
+                        :
+                        ""
+                    }
+
+                </div>
+
+            `;
+
+            episodesContainer.appendChild(div);
+
+        });
+
+        document.getElementById("loading").style.display =
+            "none";
+
+        document.getElementById("container").style.display =
+            "block";
+
+    }catch(error){
+
+        console.error(error);
+
+        document.getElementById("loading").innerHTML =
+            "שגיאה בטעינת הפודקאסט";
+    }
+}
+
+loadPodcast();
+
+</script>
+
 </body>
 </html>
